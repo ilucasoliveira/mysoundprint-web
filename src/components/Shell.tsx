@@ -17,8 +17,13 @@ export function Shell({
     <div className="min-h-dvh">
       <header className="border-b border-ink-line">
         <div className="mx-auto flex max-w-5xl items-center justify-between gap-6 px-6 py-5">
+          {/* Split the way the logo splits it, so the header reads as the mark
+              even before the drawn one exists. Kept at body size: the accent is
+              the colour that means "the number that matters" in the charts
+              below, and a brand block in it would spend that meaning on every
+              page. */}
           <Link to="/" className="text-lg font-extrabold tracking-tight">
-            MySoundPrint
+            MySound<span className="text-flare">Print</span>
           </Link>
           <nav className="flex items-center gap-5 text-sm">
             {pathname !== '/demo' && (

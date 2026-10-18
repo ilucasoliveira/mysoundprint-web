@@ -13,10 +13,30 @@
   --color-flare: #ff5f6d;
   --color-amber: #ffc247;
 
+  /* The brand ramp, read off the logo sheet: warm at the top of a bar,
+     cool at the foot. Three named stops rather than one baked image, so the
+     mark and the generated artwork can be struck from the same ramp. */
+  --color-brand-warm: #ff7a52;
+  --color-brand-hot: #fb3b6d;
+  --color-brand-cool: #a63ecb;
+
   --text-display: 4.5rem;
   --text-display--line-height: 0.92;
   --text-display--letter-spacing: -0.04em;
   --text-display--font-weight: 800;
+}
+
+@layer components {
+  /* One declaration of the ramp. Spelled out at each call site it would be
+     three slightly different gradients within a fortnight. */
+  .brand-gradient {
+    background-image: linear-gradient(
+      180deg,
+      var(--color-brand-warm) 0%,
+      var(--color-brand-hot) 48%,
+      var(--color-brand-cool) 100%
+    );
+  }
 }
 
 @layer base {
