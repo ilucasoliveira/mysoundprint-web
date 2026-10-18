@@ -10,6 +10,7 @@ export const en = {
     demo: 'Demo',
     source: 'Source',
     signOut: 'Sign out',
+    signOutConfirm: 'Sure?',
     language: 'Language',
   },
   footer: {
@@ -153,6 +154,7 @@ export const pt: Copy = {
     demo: 'Demo',
     source: 'Código',
     signOut: 'Sair',
+    signOutConfirm: 'Confirmar?',
     language: 'Idioma',
   },
   footer: {

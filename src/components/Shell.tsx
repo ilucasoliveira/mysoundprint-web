@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 
 import { useCopy } from '../i18n/context'
@@ -18,6 +19,17 @@ export function Shell({
 }) {
   const { pathname } = useLocation()
   const copy = useCopy()
+  const [confirmingSignOut, setConfirmingSignOut] = useState(false)
+
+  // Signing out is reversible, so it does not deserve a modal. What it does
+  // deserve is protection from a stray click, since the button sits beside the
+  // nav links. Two taps on the button itself covers that, and the armed state
+  // disarms on its own so it is never left sitting there.
+  useEffect(() => {
+    if (!confirmingSignOut) return
+    const timer = setTimeout(() => setConfirmingSignOut(false), 4000)
+    return () => clearTimeout(timer)
+  }, [confirmingSignOut])
 
   return (
     <div className="min-h-dvh">
@@ -44,12 +56,19 @@ export function Shell({
               <button
                 type="button"
                 onClick={() => {
+                  if (!confirmingSignOut) {
+                    setConfirmingSignOut(true)
+                    return
+                  }
+                  setConfirmingSignOut(false)
                   clearToken()
                   onSignOut()
                 }}
-                className="text-paper-dim hover:text-paper"
+                className={
+                  confirmingSignOut ? 'font-semibold text-flare' : 'text-paper-dim hover:text-paper'
+                }
               >
-                {copy.nav.signOut}
+                {confirmingSignOut ? copy.nav.signOutConfirm : copy.nav.signOut}
               </button>
             )}
             <LanguageToggle />
