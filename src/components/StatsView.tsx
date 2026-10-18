@@ -6,6 +6,7 @@ import { DecadeChart } from './DecadeChart'
 import { Figure } from './Figure'
 import { HourChart } from './HourChart'
 import { Reading, ReadingPending } from './Reading'
+import { SoundPrint } from './SoundPrint'
 import { PlayOnSpotify, SpotifyAttribution } from './SpotifyAttribution'
 import { Loading, Panel } from './states'
 
@@ -32,6 +33,24 @@ export function StatsView({ prefix, authenticated }: StatsViewProps) {
 
   return (
     <div className="space-y-12">
+      {patterns.data && patterns.data.total_plays > 0 && (
+        <section className="flex flex-col items-center gap-6 border-b border-ink-line pb-12 lg:flex-row lg:items-center lg:gap-12">
+          <SoundPrint patterns={patterns.data} concentration={concentration.data} />
+          <div className="max-w-sm">
+            <h2 className="text-2xl font-bold tracking-tight">Your print</h2>
+            <p className="mt-3 text-paper-dim">
+              One spoke per hour, midnight at the top, each as long as that hour is busy.
+              The core is the share your top three artists hold, so a narrow rotation
+              shows as a dense centre.
+            </p>
+            <p className="mt-3 text-sm text-paper-dim">
+              Drawn from {patterns.data.total_plays} plays collected so far. It thickens
+              as the history grows.
+            </p>
+          </div>
+        </section>
+      )}
+
       {/* The headline. Three numbers, each with its own sentence, before any
           chart: the charts answer "how", these answer "what". Every slot fills
           on its own as its request lands, so one slow endpoint never holds back
