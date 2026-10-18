@@ -1,0 +1,47 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Archivo', system-ui, sans-serif;
+
+  /* Ink on dark paper. Deliberately not Spotify green: this is a separate
+     product reading Spotify data, not Spotify. */
+  --color-ink: #12172e;
+  --color-ink-raised: #1c2347;
+  --color-ink-line: #2b3360;
+  --color-paper: #e9e5db;
+  --color-paper-dim: #9aa0b8;
+  --color-flare: #ff5f6d;
+  --color-amber: #ffc247;
+
+  --text-display: 4.5rem;
+  --text-display--line-height: 0.92;
+  --text-display--letter-spacing: -0.04em;
+  --text-display--font-weight: 800;
+}
+
+@layer base {
+  html {
+    background-color: var(--color-ink);
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-ink text-paper antialiased;
+    font-family: var(--font-sans);
+  }
+
+  /* Visible focus for keyboard users, on every interactive element. */
+  :focus-visible {
+    outline: 2px solid var(--color-amber);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
