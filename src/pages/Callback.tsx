@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+import { useCopy } from '../i18n/context'
 import { storeToken, takeTokenFromFragment } from '../lib/auth'
 
 /** Where Spotify's flow lands after the API has issued a session.
@@ -9,6 +10,7 @@ import { storeToken, takeTokenFromFragment } from '../lib/auth'
  * before anything else renders. */
 export function Callback({ onSignIn }: { onSignIn: () => void }) {
   const navigate = useNavigate()
+  const copy = useCopy()
 
   useEffect(() => {
     const token = takeTokenFromFragment()
@@ -23,5 +25,5 @@ export function Callback({ onSignIn }: { onSignIn: () => void }) {
     navigate('/', { replace: true })
   }, [navigate, onSignIn])
 
-  return <p className="text-paper-dim">Signing you in…</p>
+  return <p className="text-paper-dim">{copy.callback.signingIn}</p>
 }

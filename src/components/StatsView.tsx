@@ -1,4 +1,5 @@
 import { useApi } from '../hooks/useApi'
+import { useCopy } from '../i18n/context'
 import { concentrationReading, decadeReading, hourReading, peakWindow } from '../lib/readings'
 import type { Comparison, Concentration, DecadeDistribution, Patterns } from '../types'
 import { Artwork } from './Artwork'
@@ -19,6 +20,8 @@ interface StatsViewProps {
 const TIMEZONE = Intl.DateTimeFormat().resolvedOptions().timeZone
 
 export function StatsView({ prefix, authenticated }: StatsViewProps) {
+  const copy = useCopy()
+
   const decades = useApi<DecadeDistribution>(`${prefix}/decades`, authenticated)
   const concentration = useApi<Concentration>(`${prefix}/concentration`, authenticated)
   const comparison = useApi<Comparison>(`${prefix}/comparison`, authenticated)
@@ -27,9 +30,9 @@ export function StatsView({ prefix, authenticated }: StatsViewProps) {
     authenticated,
   )
 
-  const hour = patterns.data && hourReading(patterns.data)
+  const hour = patterns.data && hourReading(patterns.data, copy)
   const busiest = patterns.data && peakWindow(patterns.data)
-  const decade = decades.data && decadeReading(decades.data)
+  const decade = decades.data && decadeReading(decades.data, copy)
 
   return (
     <div className="space-y-12">
@@ -37,15 +40,10 @@ export function StatsView({ prefix, authenticated }: StatsViewProps) {
         <section className="flex flex-col items-center gap-6 border-b border-ink-line pb-12 lg:flex-row lg:items-center lg:gap-12">
           <SoundPrint patterns={patterns.data} concentration={concentration.data} />
           <div className="max-w-sm">
-            <h2 className="text-2xl font-bold tracking-tight">Your print</h2>
-            <p className="mt-3 text-paper-dim">
-              One spoke per hour, midnight at the top, each as long as that hour is busy.
-              The core is the share your top three artists hold, so a narrow rotation
-              shows as a dense centre.
-            </p>
+            <h2 className="text-2xl font-bold tracking-tight">{copy.print.title}</h2>
+            <p className="mt-3 text-paper-dim">{copy.print.body}</p>
             <p className="mt-3 text-sm text-paper-dim">
-              Drawn from {patterns.data.total_plays} plays collected so far. It thickens
-              as the history grows.
+              {copy.print.footnote(patterns.data.total_plays)}
             </p>
           </div>
         </section>
@@ -57,9 +55,9 @@ export function StatsView({ prefix, authenticated }: StatsViewProps) {
           the other two. */}
       <section className="grid gap-7 border-b border-ink-line pb-12 sm:grid-cols-2 lg:grid-cols-3 lg:gap-10">
         {concentration.data ? (
-          <Reading tone="flare" {...concentrationReading(concentration.data)} />
+          <Reading tone="flare" {...concentrationReading(concentration.data, copy)} />
         ) : (
-          <ReadingPending label={concentration.error ?? 'Counting the artists you repeat'} />
+          <ReadingPending label={concentration.error ?? copy.pending.concentration} />
         )}
 
         {hour ? (
@@ -68,44 +66,31 @@ export function StatsView({ prefix, authenticated }: StatsViewProps) {
           <ReadingPending
             label={
               patterns.error ??
-              (patterns.data
-                ? 'No history collected yet, so there is no clock to read.'
-                : 'Reading the hours you listen')
+              (patterns.data ? copy.pending.noHistory : copy.pending.hours)
             }
           />
         )}
 
-        {decade ? (
-          <Reading {...decade} />
-        ) : (
-          <ReadingPending label={decades.error ?? 'Dating your top tracks'} />
-        )}
+        {decade ? <Reading {...decade} /> : <ReadingPending label={decades.error ?? copy.pending.decades} />}
       </section>
 
-      <Figure
-        heading="Where your taste sits in time"
-        caption="Which decade each of your top tracks was released in."
-      >
-        {decades.loading && <Loading label="Reading your top tracks" />}
-        {decades.error && <Panel title="Could not load decades" body={decades.error} />}
+      <Figure heading={copy.decades.heading} caption={copy.decades.caption}>
+        {decades.loading && <Loading label={copy.decades.loading} />}
+        {decades.error && <Panel title={copy.decades.error} body={decades.error} />}
         {decades.data && (
           <>
             <DecadeChart decades={decades.data.decades} />
             <p className="mt-4 text-sm text-paper-dim">
-              Based on {decades.data.total_tracks} tracks. The date is the album's, so
-              reissues and re-recordings count in the year they came out again.
+              {copy.decades.footnote(decades.data.total_tracks)}
             </p>
           </>
         )}
       </Figure>
 
-      <Figure
-        heading="The names behind that concentration"
-        caption="Your most repeated artists, and how many of your top tracks each one holds."
-      >
-        {concentration.loading && <Loading label="Counting artists" />}
+      <Figure heading={copy.concentration.heading} caption={copy.concentration.caption}>
+        {concentration.loading && <Loading label={copy.concentration.loading} />}
         {concentration.error && (
-          <Panel title="Could not load concentration" body={concentration.error} />
+          <Panel title={copy.concentration.error} body={concentration.error} />
         )}
         {concentration.data && (
           <ol className="max-w-2xl space-y-3">
@@ -115,30 +100,26 @@ export function StatsView({ prefix, authenticated }: StatsViewProps) {
                 className="flex items-center gap-4 border-b border-ink-line pb-3"
               >
                 <span className="w-4 shrink-0 tabular-nums text-paper-dim">{index + 1}</span>
-                <Artwork src={artist.image} alt={`${artist.name} album cover`} />
+                <Artwork src={artist.image} alt={artist.name} />
                 <span className="min-w-0 flex-1">
                   <span className="block truncate font-medium">{artist.name}</span>
                   <PlayOnSpotify url={artist.spotify_url} label={artist.name} />
                 </span>
-                <span className="shrink-0 tabular-nums text-paper-dim">
-                  {artist.share}%
-                </span>
+                <span className="shrink-0 tabular-nums text-paper-dim">{artist.share}%</span>
               </li>
             ))}
           </ol>
         )}
       </Figure>
 
-      <Figure
-        heading="What changed between the last four weeks and the last year"
-        caption="Artists that appeared, disappeared, or moved between the two rankings."
-      >
-        {comparison.loading && <Loading label="Comparing both rankings" />}
-        {comparison.error && <Panel title="Could not load the comparison" body={comparison.error} />}
+      <Figure heading={copy.comparison.heading} caption={copy.comparison.caption}>
+        {comparison.loading && <Loading label={copy.comparison.loading} />}
+        {comparison.error && <Panel title={copy.comparison.error} body={comparison.error} />}
         {comparison.data && (
           <div className="grid gap-8 md:grid-cols-3">
             <MoveList
-              title="New this month"
+              title={copy.comparison.entered}
+              empty={copy.comparison.empty}
               items={comparison.data.entered.slice(0, 8).map((item) => ({
                 name: item.name,
                 detail: `#${item.position}`,
@@ -147,7 +128,8 @@ export function StatsView({ prefix, authenticated }: StatsViewProps) {
               accent="text-amber"
             />
             <MoveList
-              title="Climbing"
+              title={copy.comparison.climbed}
+              empty={copy.comparison.empty}
               items={comparison.data.climbed.slice(0, 8).map((item) => ({
                 name: item.name,
                 detail: `+${item.change}`,
@@ -156,10 +138,11 @@ export function StatsView({ prefix, authenticated }: StatsViewProps) {
               accent="text-flare"
             />
             <MoveList
-              title="Dropped out"
+              title={copy.comparison.dropped}
+              empty={copy.comparison.empty}
               items={comparison.data.dropped.slice(0, 8).map((item) => ({
                 name: item.name,
-                detail: `was #${item.position}`,
+                detail: copy.comparison.wasAt(item.position),
                 image: item.image,
               }))}
               accent="text-paper-dim"
@@ -168,26 +151,23 @@ export function StatsView({ prefix, authenticated }: StatsViewProps) {
         )}
       </Figure>
 
-      <Figure
-        heading="When you actually listen"
-        caption={`Plays by hour of the day, in ${TIMEZONE}. Built from history this API collects itself, because Spotify only ever returns the last 50 plays.`}
-      >
-        {patterns.loading && <Loading label="Reading your history" />}
-        {patterns.error && <Panel title="Could not load patterns" body={patterns.error} />}
+      <Figure heading={copy.patterns.heading} caption={copy.patterns.caption(TIMEZONE)}>
+        {patterns.loading && <Loading label={copy.patterns.loading} />}
+        {patterns.error && <Panel title={copy.patterns.error} body={patterns.error} />}
         {patterns.data && patterns.data.total_plays === 0 && (
-          <Panel
-            title="No history yet"
-            body="Collect your recent plays once and this fills in. It gets more interesting after a few days."
-          />
+          <Panel title={copy.patterns.emptyTitle} body={copy.patterns.emptyBody} />
         )}
         {patterns.data && patterns.data.total_plays > 0 && (
           <>
             <HourChart hours={patterns.data.by_hour} highlight={busiest?.hours} />
             <p className="mt-4 text-sm text-paper-dim">
               {patterns.data.peak_weekday
-                ? `Busiest on ${patterns.data.peak_weekday}. `
+                ? copy.patterns.busiest(
+                    copy.patterns.weekdays[patterns.data.peak_weekday] ??
+                      patterns.data.peak_weekday,
+                  )
                 : ''}
-              Longest streak of consecutive listening days: {patterns.data.streak.longest_streak}.
+              {copy.patterns.streak(patterns.data.streak.longest_streak)}
             </p>
           </>
         )}
@@ -207,21 +187,23 @@ function MoveList({
   title,
   items,
   accent,
+  empty,
 }: {
   title: string
   items: MoveEntry[]
   accent: string
+  empty: string
 }) {
   return (
     <div>
       <h3 className="font-semibold">{title}</h3>
       {items.length === 0 ? (
-        <p className="mt-3 text-sm text-paper-dim">Nothing moved here.</p>
+        <p className="mt-3 text-sm text-paper-dim">{empty}</p>
       ) : (
         <ul className="mt-3 space-y-3">
           {items.map((item) => (
             <li key={item.name} className="flex items-center gap-3 text-sm">
-              <Artwork src={item.image} alt={`${item.name} artist image`} />
+              <Artwork src={item.image} alt={item.name} />
               <span className="min-w-0 flex-1 truncate">{item.name}</span>
               <span className={`shrink-0 tabular-nums ${accent}`}>{item.detail}</span>
             </li>

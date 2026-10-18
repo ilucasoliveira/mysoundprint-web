@@ -1,6 +1,11 @@
 import { Link, useLocation } from 'react-router-dom'
 
+import { useCopy } from '../i18n/context'
 import { clearToken } from '../lib/auth'
+import { LanguageToggle } from './LanguageToggle'
+
+const API_REPO = 'https://github.com/ilucasoliveira/mysoundprint-api'
+const WEB_REPO = 'https://github.com/ilucasoliveira/mysoundprint-web'
 
 export function Shell({
   children,
@@ -12,6 +17,7 @@ export function Shell({
   onSignOut: () => void
 }) {
   const { pathname } = useLocation()
+  const copy = useCopy()
 
   return (
     <div className="min-h-dvh">
@@ -28,14 +34,11 @@ export function Shell({
           <nav className="flex items-center gap-5 text-sm">
             {pathname !== '/demo' && (
               <Link to="/demo" className="text-paper-dim hover:text-paper">
-                Demo
+                {copy.nav.demo}
               </Link>
             )}
-            <a
-              href="https://github.com/ilucasoliveira/mysoundprint-api"
-              className="text-paper-dim hover:text-paper"
-            >
-              Source
+            <a href={API_REPO} className="text-paper-dim hover:text-paper">
+              {copy.nav.source}
             </a>
             {signedIn && (
               <button
@@ -46,9 +49,10 @@ export function Shell({
                 }}
                 className="text-paper-dim hover:text-paper"
               >
-                Sign out
+                {copy.nav.signOut}
               </button>
             )}
+            <LanguageToggle />
           </nav>
         </div>
       </header>
@@ -61,21 +65,13 @@ export function Shell({
           the front end is otherwise unreachable from the site itself. */}
       <footer className="border-t border-ink-line">
         <div className="mx-auto flex max-w-5xl flex-col gap-3 px-6 py-6 text-sm text-paper-dim sm:flex-row sm:items-center sm:justify-between">
-          <p>
-            &copy; {new Date().getFullYear()} Lucas de Oliveira. Not affiliated with Spotify.
-          </p>
+          <p>{copy.footer.credit(new Date().getFullYear())}</p>
           <nav className="flex items-center gap-5">
-            <a
-              href="https://github.com/ilucasoliveira/mysoundprint-api"
-              className="hover:text-paper"
-            >
-              API
+            <a href={API_REPO} className="hover:text-paper">
+              {copy.footer.api}
             </a>
-            <a
-              href="https://github.com/ilucasoliveira/mysoundprint-web"
-              className="hover:text-paper"
-            >
-              Front end
+            <a href={WEB_REPO} className="hover:text-paper">
+              {copy.footer.web}
             </a>
           </nav>
         </div>

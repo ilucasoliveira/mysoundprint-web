@@ -1,3 +1,5 @@
+import { useCopy } from '../i18n/context'
+import { clock } from '../lib/readings'
 import type { HourEntry } from '../types'
 
 interface HourChartProps {
@@ -9,6 +11,7 @@ interface HourChartProps {
 
 /** Twenty-four columns, one per hour, as a day seen end to end. */
 export function HourChart({ hours, highlight = [] }: HourChartProps) {
+  const copy = useCopy()
   const peak = Math.max(...hours.map((entry) => entry.count), 1)
   const lit = new Set(highlight)
   const anyLit = lit.size > 0
@@ -21,7 +24,7 @@ export function HourChart({ hours, highlight = [] }: HourChartProps) {
             <span
               className={`block w-full ${!anyLit || lit.has(entry.hour) ? 'bg-amber' : 'bg-amber/30'}`}
               style={{ height: `${Math.max((entry.count / peak) * 100, 2)}%` }}
-              title={`${String(entry.hour).padStart(2, '0')}:00, ${entry.count} plays`}
+              title={copy.patterns.hourTooltip(clock(entry.hour), entry.count)}
             />
           </li>
         ))}

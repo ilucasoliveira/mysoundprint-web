@@ -1,5 +1,7 @@
 import { useState } from 'react'
 
+import { useCopy } from '../i18n/context'
+
 /** Required attribution for Spotify content.
  *
  * The guidelines ask for the full logo, icon plus wordmark, next to content
@@ -16,10 +18,11 @@ import { useState } from 'react'
  * is the part the guidelines actually require. */
 export function SpotifyAttribution({ className = '' }: { className?: string }) {
   const [missing, setMissing] = useState(false)
+  const copy = useCopy()
 
   return (
     <p className={`flex items-center gap-2 text-sm text-paper-dim ${className}`}>
-      <span>Content from</span>
+      <span>{copy.spotify.contentFrom}</span>
       {missing ? (
         <span className="font-semibold text-paper">Spotify</span>
       ) : (
@@ -37,6 +40,7 @@ export function SpotifyAttribution({ className = '' }: { className?: string }) {
 }
 
 export function PlayOnSpotify({ url, label }: { url: string | null | undefined; label: string }) {
+  const copy = useCopy()
   if (!url) return null
 
   return (
@@ -46,7 +50,7 @@ export function PlayOnSpotify({ url, label }: { url: string | null | undefined; 
       rel="noreferrer"
       className="text-xs uppercase tracking-wide text-paper-dim hover:text-paper"
     >
-      Play on Spotify
+      {copy.spotify.playOn}
       <span className="sr-only">: {label}</span>
     </a>
   )

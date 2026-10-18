@@ -1,11 +1,15 @@
+import type { Copy } from '../i18n/copy'
 import type { Concentration, DecadeDistribution, Patterns } from '../types'
 
 /** A single interpreted statistic.
  *
  * The number alone says nothing: `42` is not a finding, "42% of everything you
  * play comes from three artists" is. So every reading carries the sentence that
- * gives it meaning, and that sentence is derived from the payload rather than
- * written by hand, which means it can never contradict the number beside it. */
+ * gives it meaning, and that sentence is built from the payload rather than
+ * written by hand, which means it can never contradict the number beside it.
+ *
+ * The wording comes in as a dictionary rather than living here, so the same
+ * arithmetic serves both languages and neither can drift from the other. */
 export interface Reading {
   /** The number, already formatted. Meant to be set in display type. */
   value: string
@@ -15,28 +19,26 @@ export interface Reading {
   note?: string
 }
 
-export function concentrationReading(data: Concentration): Reading {
+export function concentrationReading(data: Concentration, copy: Copy): Reading {
   const { top_3_share: share, distinct_artists: artists, total_tracks: tracks } = data
+  const words = copy.readings
 
   // Each branch states something that is true for its own range: no sentence
-  // claims "half" unless the share has actually reached half.
+  // claims "most" unless the share has actually got there.
   const note =
     share >= 50
-      ? `Three names out of ${artists} hold most of what you play.`
+      ? words.concentrationNarrow(artists)
       : share >= 30
-        ? `${artists} artists turn up across ${tracks} tracks, but the top three take the biggest slice.`
-        : `A wide rotation: ${artists} artists share your listening fairly evenly.`
+        ? words.concentrationMiddle(artists, tracks)
+        : words.concentrationWide(artists)
 
-  return {
-    value: `${share}%`,
-    sentence: 'of everything you play comes from three artists.',
-    note,
-  }
+  return { value: `${share}%`, sentence: words.concentrationSentence, note }
 }
 
-export function decadeReading(data: DecadeDistribution): Reading | null {
+export function decadeReading(data: DecadeDistribution, copy: Copy): Reading | null {
   if (data.decades.length === 0) return null
 
+  const words = copy.readings
   const top = data.decades.reduce((best, entry) => (entry.count > best.count ? entry : best))
   const beforeStreaming = data.decades
     .filter((entry) => entry.decade < 2000)
@@ -45,16 +47,12 @@ export function decadeReading(data: DecadeDistribution): Reading | null {
 
   const note =
     beforeStreaming > 50
-      ? 'Most of what you play is older than streaming itself.'
+      ? words.decadeOlderThanStreaming
       : oldest < top.decade
-        ? `Your oldest pick reaches back to the ${oldest}s.`
+        ? words.decadeOldest(oldest)
         : undefined
 
-  return {
-    value: `${top.percentage}%`,
-    sentence: `of your top tracks came out in the ${top.decade}s.`,
-    note,
-  }
+  return { value: `${top.percentage}%`, sentence: words.decadeSentence(top.decade), note }
 }
 
 const WINDOW_HOURS = 3
@@ -102,7 +100,7 @@ export function peakWindow(data: Patterns): PeakWindow | null {
   return { start: bestStart, hours, count: bestTotal }
 }
 
-export function hourReading(data: Patterns): Reading | null {
+export function hourReading(data: Patterns, copy: Copy): Reading | null {
   const busiest = peakWindow(data)
   if (!busiest) return null
 
@@ -111,8 +109,8 @@ export function hourReading(data: Patterns): Reading | null {
 
   return {
     value: `${share}%`,
-    sentence: `of your plays land between ${clock(busiest.start)} and ${clock(end)}.`,
-    note: `From ${data.total_plays} plays collected so far, counted in ${data.timezone}.`,
+    sentence: copy.readings.hourSentence(clock(busiest.start), clock(end)),
+    note: copy.readings.hourNote(data.total_plays, data.timezone),
   }
 }
 
@@ -126,6 +124,6 @@ function hourCounts(data: Patterns): number[] {
   return counts
 }
 
-function clock(hour: number): string {
+export function clock(hour: number): string {
   return `${String(hour).padStart(2, '0')}:00`
 }

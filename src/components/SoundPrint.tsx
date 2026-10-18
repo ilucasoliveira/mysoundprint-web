@@ -1,3 +1,4 @@
+import { useCopy } from '../i18n/context'
 import type { Concentration, Patterns } from '../types'
 
 const SIZE = 400
@@ -44,6 +45,7 @@ interface SoundPrintProps {
  * the collected history grows. It is struck from the same ramp as the logo, so
  * the mark and the data are one language rather than two. */
 export function SoundPrint({ patterns, concentration, className = '' }: SoundPrintProps) {
+  const copy = useCopy()
   if (patterns.total_plays === 0) return null
 
   const counts = new Array<number>(24).fill(0)
@@ -59,7 +61,7 @@ export function SoundPrint({ patterns, concentration, className = '' }: SoundPri
       viewBox={`0 0 ${SIZE} ${SIZE}`}
       className={`w-full max-w-md ${className}`}
       role="img"
-      aria-label={`A radial figure of ${patterns.total_plays} plays, one spoke per hour of the day, midnight at the top.`}
+      aria-label={copy.print.alt(patterns.total_plays)}
     >
       {/* The hours with no plays still get a mark, so the figure reads as a
           whole day rather than as the busy part of one. */}

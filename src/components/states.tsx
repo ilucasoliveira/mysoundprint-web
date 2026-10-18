@@ -1,3 +1,5 @@
+import { useCopy } from '../i18n/context'
+
 interface MessageProps {
   title: string
   body?: string
@@ -27,10 +29,6 @@ export function Loading({ label }: { label: string }) {
 }
 
 export function Waking() {
-  return (
-    <Panel
-      title="Waking the server"
-      body="The API sleeps after 15 minutes without traffic, so the first request of the day can take up to a minute. Later ones are immediate."
-    />
-  )
+  const copy = useCopy()
+  return <Panel title={copy.states.wakingTitle} body={copy.states.wakingBody} />
 }
