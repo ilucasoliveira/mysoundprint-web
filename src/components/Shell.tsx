@@ -4,6 +4,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { useCopy } from '../i18n/context'
 import { clearToken } from '../lib/auth'
 import { LanguageToggle } from './LanguageToggle'
+import { Mark } from './Mark'
 
 const API_REPO = 'https://github.com/ilucasoliveira/mysoundprint-api'
 const WEB_REPO = 'https://github.com/ilucasoliveira/mysoundprint-web'
@@ -40,8 +41,14 @@ export function Shell({
               the colour that means "the number that matters" in the charts
               below, and a brand block in it would spend that meaning on every
               page. */}
-          <Link to="/" className="text-lg font-extrabold tracking-tight">
-            MySound<span className="text-flare">Print</span>
+          <Link
+            to="/"
+            className="flex items-center gap-2.5 text-lg font-extrabold tracking-tight"
+          >
+            <Mark className="h-6 w-6 shrink-0" />
+            <span>
+              MySound<span className="text-flare">Print</span>
+            </span>
           </Link>
           <nav className="flex items-center gap-5 text-sm">
             {pathname !== '/demo' && (

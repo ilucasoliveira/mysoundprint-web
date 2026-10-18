@@ -1,0 +1,15 @@
+{
+  "name": "MySoundPrint",
+  "short_name": "MySoundPrint",
+  "description": "Personal listening statistics built on top of the Spotify Web API.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#12172e",
+  "theme_color": "#12172e",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
