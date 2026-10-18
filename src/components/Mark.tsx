@@ -1,12 +1,18 @@
-const BAR_WIDTH = 10
-const GAP = 4
 const GRID = 64
+const BAR_WIDTH = 11.5
 
-/** Four bars of uneven height, centred on one line. Reconstructed from the
- *  logo sheet rather than exported from it, so swap in the real file when
- *  there is one: these are the same proportions, not the same path data. */
-const HEIGHTS = [25, 42, 56, 36]
-const LEFT = (GRID - (BAR_WIDTH * 4 + GAP * 3)) / 2
+/** The four bars, measured off the logo sheet rather than eyeballed.
+ *
+ *  They are not centred on a shared line and they are not evenly spaced: the
+ *  arrangement is a waveform, and an earlier version that tidied it into a
+ *  symmetric row read as a different mark. Each bar keeps the offset it has in
+ *  the original, scaled onto a 64 unit grid. */
+const BARS = [
+  { x: 2.2, y: 28.7, height: 21.1 },
+  { x: 17.0, y: 18.9, height: 42.1 },
+  { x: 33.3, y: 3.0, height: 56.0 },
+  { x: 50.3, y: 17.0, height: 32.2 },
+]
 
 const GRADIENT_ID = 'mysoundprint-mark'
 
@@ -23,17 +29,17 @@ export function Mark({ className = '' }: { className?: string }) {
             mark and anything else on the ramp move together. */}
         <linearGradient id={GRADIENT_ID} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="var(--color-brand-warm)" />
-          <stop offset="48%" stopColor="var(--color-brand-hot)" />
+          <stop offset="50%" stopColor="var(--color-brand-hot)" />
           <stop offset="100%" stopColor="var(--color-brand-cool)" />
         </linearGradient>
       </defs>
-      {HEIGHTS.map((height, index) => (
+      {BARS.map((bar) => (
         <rect
-          key={height}
-          x={LEFT + index * (BAR_WIDTH + GAP)}
-          y={(GRID - height) / 2}
+          key={bar.x}
+          x={bar.x}
+          y={bar.y}
           width={BAR_WIDTH}
-          height={height}
+          height={bar.height}
           rx={BAR_WIDTH / 2}
           fill={`url(#${GRADIENT_ID})`}
         />

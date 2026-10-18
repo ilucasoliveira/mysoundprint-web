@@ -1,15 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <!-- Literal hex, not theme variables: a favicon is fetched on its own and
-       never sees the page's stylesheet. -->
+       never sees the page's stylesheet. Geometry matches Mark.tsx. -->
   <defs>
     <linearGradient id="mark" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#ff7a52"/>
-      <stop offset="48%" stop-color="#fb3b6d"/>
-      <stop offset="100%" stop-color="#a63ecb"/>
+      <stop offset="0%" stop-color="#fd756a"/>
+      <stop offset="50%" stop-color="#fd3c76"/>
+      <stop offset="100%" stop-color="#a81da4"/>
     </linearGradient>
   </defs>
-  <rect x="6" y="19.5" width="10" height="25" rx="5" fill="url(#mark)"/>
-  <rect x="20" y="11" width="10" height="42" rx="5" fill="url(#mark)"/>
-  <rect x="34" y="4" width="10" height="56" rx="5" fill="url(#mark)"/>
-  <rect x="48" y="14" width="10" height="36" rx="5" fill="url(#mark)"/>
+  <rect x="2.2" y="28.7" width="11.5" height="21.1" rx="5.75" fill="url(#mark)"/>
+  <rect x="17" y="18.9" width="11.5" height="42.1" rx="5.75" fill="url(#mark)"/>
+  <rect x="33.3" y="3" width="11.5" height="56" rx="5.75" fill="url(#mark)"/>
+  <rect x="50.3" y="17" width="11.5" height="32.2" rx="5.75" fill="url(#mark)"/>
 </svg>

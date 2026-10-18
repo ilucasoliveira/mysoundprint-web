@@ -58,6 +58,8 @@ npm run dev
 | `npm run build` | Typecheck with `tsc -b`, then build to `dist/` |
 | `npm run preview` | Serve the built output, which is where the service worker is active |
 | `npm run lint` | ESLint over `src/` |
+| `npm test` | Vitest, once |
+| `npm run test:watch` | Vitest in watch mode |
 
 ### Environment
 
@@ -147,13 +149,35 @@ that fails, so the workflow adds eslint on top rather than taking the deploy
 over. Driving the deploy from here would mean three more secrets and losing
 per-pull-request preview deployments.
 
+## Tests
+
+```bash
+npm test
+```
+
+The suite covers `src/lib/readings.ts`, which is where the interesting logic
+lives and the only part of the project that is pure: payload in, reading out,
+with no network, DOM or clock involved.
+
+What it actually guards, rather than coverage for its own sake:
+
+- The busiest-window search **wraps past midnight**, so a 23:00 habit is not
+  cut in half by the date changing.
+- An hour absent from the payload counts as zero. The API omits empty hours
+  instead of sending a count of zero, and a naive index lookup would read
+  `undefined` into the arithmetic.
+- Each branch of the concentration note is true for its own range, boundaries
+  included: no branch may claim "most" below the point where it is most.
+- The decade reading picks the highest count, not the first entry.
+- Both dictionaries produce output, so the English and Portuguese paths are
+  exercised rather than only the default.
+
 ## Known gaps
 
-- No test suite. The logic worth testing is in `src/lib/readings.ts`, which is
-  pure and would be cheap to cover; the CI job is ready for a `test` step.
 - The brand mark in `src/components/Mark.tsx` and `public/favicon.svg` is
-  reconstructed from the logo sheet: the same proportions, not the same path
-  data.
+  reconstructed from the logo sheet: bar positions, widths and gradient stops
+  measured from the artwork, but redrawn rather than exported. Swap in the
+  vector source if one appears.
 
 ## License
 

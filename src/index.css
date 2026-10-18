@@ -16,9 +16,9 @@
   /* The brand ramp, read off the logo sheet: warm at the top of a bar,
      cool at the foot. Three named stops rather than one baked image, so the
      mark and the generated artwork can be struck from the same ramp. */
-  --color-brand-warm: #ff7a52;
-  --color-brand-hot: #fb3b6d;
-  --color-brand-cool: #a63ecb;
+  --color-brand-warm: #fd756a;
+  --color-brand-hot: #fd3c76;
+  --color-brand-cool: #a81da4;
 
   --text-display: 4.5rem;
   --text-display--line-height: 0.92;
@@ -33,7 +33,7 @@
     background-image: linear-gradient(
       180deg,
       var(--color-brand-warm) 0%,
-      var(--color-brand-hot) 48%,
+      var(--color-brand-hot) 50%,
       var(--color-brand-cool) 100%
     );
   }
