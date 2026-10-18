@@ -5,7 +5,10 @@ import { useState } from 'react'
  * The guidelines ask for the full logo, icon plus wordmark, next to content
  * taken from Spotify, and for links to read "PLAY ON SPOTIFY" or similar.
  * The mark lives in /public so it stays the file Spotify distributes, rather
- * than a redrawn copy: a logo traced by hand is no longer their logo.
+ * than a redrawn copy: a logo traced by hand is no longer their logo. It is the
+ * white monochrome version because the green is only permitted on black or
+ * white, and this page is neither. At 21px tall the full logo comes out 77px
+ * wide, just past the 70px floor the guidelines set.
  *
  * If that file is not in place the component falls back to the name set in
  * type. A missing asset should cost the page a logo, never leave a broken
@@ -21,10 +24,10 @@ export function SpotifyAttribution({ className = '' }: { className?: string }) {
         <span className="font-semibold text-paper">Spotify</span>
       ) : (
         <img
-          src="/spotify-logo.png"
+          src="/spotify-logo.svg"
           alt="Spotify"
           className="h-[21px] w-auto"
-          width={70}
+          width={77}
           height={21}
           onError={() => setMissing(true)}
         />
