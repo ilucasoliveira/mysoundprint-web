@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Typecheck, lint and build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+          cache: npm
+
+      # `npm ci` rather than `npm install`: it installs exactly what the lock
+      # file says and fails if the lock and package.json disagree, so the build
+      # here is the build that was tested.
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npx tsc -b
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+# Deployment is Vercel's, triggered by the push, and is deliberately left
+# alone. Vercel already runs `tsc -b && vite build` and refuses to publish a
+# build that fails, so the only thing this workflow adds on top is eslint.
+# Taking the deploy over would mean turning off the Git integration and
+# driving the Vercel CLI from here with three more secrets, and it would cost
+# the per-pull-request preview deployments. Not a trade worth making.
